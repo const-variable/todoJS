@@ -1,0 +1,9 @@
+#root{
+    font-family: 'Roboto', sans-serif;
+}
+
+.add-list{
+    padding: 2px;
+    border: 1px solid #000;
+    font-size: 12px;
+}

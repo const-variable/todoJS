@@ -14,4 +14,4 @@ In script.js
  Model and View are connected by Controller.
  and everytime I create a new instace of a Controller, new List will be created. 
  
- But there is some problem with the list right now. Fix will be done in the following commits.
+ But there is some problem with the list right now. Fixes will be done in the future commits.

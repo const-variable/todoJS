@@ -2,11 +2,11 @@
 let mainList = [];
 // let todoList = document.querySelector('list-itmes').firstChild ? document.querySelector('list-itmes').firstChild  : '' 
 class Model {
-    constructor(todos) {
+    constructor() {
         this.todos = [
             { id: 1, text: 'Hello world', complete: true },
             // { id: 2, text: 'Create a todo app', complete: false },
-            ...todos
+
         ]
     }
 
@@ -18,6 +18,7 @@ class Model {
         }
 
         this.todos.push(todo);
+        console.log(">>>>", this.todos)
         this.onTodoListChanged(this.todos);
     }
 
@@ -64,7 +65,7 @@ class View {
 
         // this.app.append(this.title, this.p, this.form, this.todoList);
         // console.log('>>> this.todoList', this.todoList, document.querySelector('#root'))
-       
+
     }
 
     createElement(tag, className, idName) {
@@ -137,6 +138,7 @@ class View {
     // }
 
     bindAddTodo(handler) {
+        // console.log('th  is inside bindAddTodo',this);
         this.form.addEventListener('submit', event => {
             event.preventDefault();
 
@@ -182,8 +184,10 @@ class Controller {
         let firstList = document.createElement('li');
         firstList.textContent = name;
         document.querySelector('.main-list').appendChild(firstList);
-        
+
         this.onTodoListChanged(this.model.todos);
+        
+        console.log("====>this inside controller constructor",this);
 
         this.view.bindAddTodo(this.handleAddTodo);
         this.view.bindDeleteTodo(this.handleDeleteTodo);
@@ -192,45 +196,34 @@ class Controller {
         this.model.bindTodoListChanged(this.onTodoListChanged);
     }
 
+    
+    handleAddTodo = (text) => {
+        console.log(this)
+        this.model.addTodos(text);
+    }
+    
+    handleDeleteTodo = (id) => {
+        this.model.deleteTodo(id);
+    }
+    
+    handleToggleTodo = (id) => {
+        this.model.toggleTodo(id);
+    }
+    
     onTodoListChanged = (todos) => {
         this.view.displayTodos(todos)
     }
 
-    handleAddTodo = (text) => {
-        this.model.addTodos(text);
-    }
-
-    handleDeleteTodo = (id) => {
-        this.model.deleteTodo(id);
-    }
-
-    handleToggleTodo = (id) => {
-        this.model.toggleTodo(id);
-    }
-
-
 }
-// function createNewList(){
-//     return new Controller(new Model(), new View());
-// }
-const app = new Controller('List 1', new Model([]), new View());
+
+const app = new Controller('List 1', new Model(), new View());
 const addbutton = document.querySelector('.add-list');
 
 addbutton.addEventListener('click', () => createNewList());
 
 function createNewList() {
-    // const domNodes = document.querySelector('#root');
-    // let child = domNodes.lastElementChild;
-    // while(child){
-    //     domNodes.removeChild(child);
-    //     child = domNodes.lastElementChild;
-    // }
+
     let listName = prompt('Enter List name:', '');
-
-    // let listNode = document.createElement('li');
-    // listNode.textContent = listName;
-
-    // document.querySelector('.main-list').appendChild(listNode);
-
-    let newList = new Controller(listName, new Model([]), new View());
+    let newList = new Controller(listName, new Model(), new View());
+    console.log(newList.model.todos)
 }

@@ -1,13 +1,22 @@
+let globalTasks = {
+    list1: [
+        { id: 1, text: 'Hello world', complete: true },
+        { id: 2, text: 'Create a todo app', complete: false },
+    ],
+    list2: [
+        { id: 1, text: 'List2 task1', complete: false },
+        { id: 2, text: 'List2 task2', complete: true },
+        { id: 3, text: 'List2 task3', complete: true },
+    ]
+}
 
-let mainList = [];
-// let todoList = document.querySelector('list-itmes').firstChild ? document.querySelector('list-itmes').firstChild  : '' 
 class Model {
-    constructor() {
-        this.todos = [
-            { id: 1, text: 'Hello world', complete: true },
-            // { id: 2, text: 'Create a todo app', complete: false },
+    constructor(listname) {
 
-        ]
+        this.listname = listname;
+        console.log("listname:",this.listname);
+        this.todos = globalTasks[listname] ? [...globalTasks[listname]] : [];
+        console.log('todos accroding to listname:',this.todos);
     }
 
     addTodos(todoText) {
@@ -16,9 +25,9 @@ class Model {
             text: todoText,
             complete: false
         }
-
+        
         this.todos.push(todo);
-        console.log(">>>>", this.todos)
+        console.log(">>>>", this.listname)
         this.onTodoListChanged(this.todos);
     }
 
@@ -39,9 +48,9 @@ class Model {
 }
 
 class View {
-    constructor() {
+    constructor(listname) {
         this.app = this.getElement('#root');
-
+        this.listname = listname
         // this.title = this.createElement('h1');  
         // this.title.textContent = 'Todos';
 
@@ -128,16 +137,7 @@ class View {
         }
     }
 
-    // bindCreateNewList(handler){
-    //     this.app.addEventListener('click', event => {
-    //         event.preventDefault();
-    //         if(event.target.className == 'new-list'){
-    //             handler(); 
-    //         }
-    //     })
-    // }
-
-    bindAddTodo(handler) {
+    bindAddTodo (handler) {
         // console.log('th  is inside bindAddTodo',this);
         this.form.addEventListener('submit', event => {
             event.preventDefault();
@@ -166,9 +166,6 @@ class View {
             }
         })
     }
-
-
-
 }
 
 class Controller {
@@ -186,8 +183,8 @@ class Controller {
         document.querySelector('.main-list').appendChild(firstList);
 
         this.onTodoListChanged(this.model.todos);
-        
-        console.log("====>this inside controller constructor",this);
+
+        console.log("Inside controller constructor", this);
 
         this.view.bindAddTodo(this.handleAddTodo);
         this.view.bindDeleteTodo(this.handleDeleteTodo);
@@ -196,27 +193,27 @@ class Controller {
         this.model.bindTodoListChanged(this.onTodoListChanged);
     }
 
-    
+
     handleAddTodo = (text) => {
-        console.log(this)
+        console.log("inside handleAddToDO:",this)
         this.model.addTodos(text);
     }
-    
+
     handleDeleteTodo = (id) => {
         this.model.deleteTodo(id);
     }
-    
+
     handleToggleTodo = (id) => {
         this.model.toggleTodo(id);
     }
-    
+
     onTodoListChanged = (todos) => {
         this.view.displayTodos(todos)
     }
 
 }
 
-const app = new Controller('List 1', new Model(), new View());
+const app = new Controller('List 1', new Model('list1'), new View('list1'));
 const addbutton = document.querySelector('.add-list');
 
 addbutton.addEventListener('click', () => createNewList());
@@ -224,6 +221,6 @@ addbutton.addEventListener('click', () => createNewList());
 function createNewList() {
 
     let listName = prompt('Enter List name:', '');
-    let newList = new Controller(listName, new Model(), new View());
+    let newList = new Controller(listName, new Model(listName), new View(listName));
     console.log(newList.model.todos)
 }

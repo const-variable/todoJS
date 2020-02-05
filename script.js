@@ -10,6 +10,7 @@ let globalTasks = {
     ]
 }
 
+
 class Model {
     constructor(listname) {
 
@@ -135,6 +136,7 @@ class View {
                 this.todoList.append(li);
             })
         }
+        globalTasks[this.listname] = [...todos];
     }
 
     bindAddTodo (handler) {

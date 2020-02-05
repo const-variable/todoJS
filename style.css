@@ -1,9 +1,14 @@
 #root{
     font-family: 'Roboto', sans-serif;
+    width: 20%;
 }
 
 .add-list{
     padding: 2px;
     border: 1px solid #000;
     font-size: 12px;
+}
+
+.list-contianer {
+    background:rgb(214, 191, 191);
 }

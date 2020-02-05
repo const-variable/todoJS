@@ -1,3 +1,26 @@
+
+/*  
+    This app is created in JS only.
+
+     WARNING::: THIS APP IS NOT COMPLETE YET :: :: i.e. that outer list stuff (part in the pink color).
+    So don't rely on a view because globaltasks are not getting updated correctly.
+
+
+    Requirement: You need to create a todo list following MVC and 
+    There will be a main list. each list contains set of tasks. on which you can apply CRUD operations.
+    you can create new list and delete that list. 
+
+    List1: > Tasks from list 1 which are array of objects. 
+    List2: > tasks from list 2 
+*/
+
+// The Model class have current todo list.
+// There are three classes here Model, View and Controller. 
+// App is getting created when you create new instance of a class Controller passing new Model() and new View() to it.
+// Everything is working fine when there is only one list.
+// but as you create new list it is getting tasks from the previous list 
+
+
 let globalTasks = {
     list1: [
         { id: 1, text: 'Hello world', complete: true },
@@ -10,14 +33,13 @@ let globalTasks = {
     ]
 }
 
+let counter = 0;
 
 class Model {
     constructor(listname) {
 
         this.listname = listname;
-        console.log("listname:",this.listname);
         this.todos = globalTasks[listname] ? [...globalTasks[listname]] : [];
-        console.log('todos accroding to listname:',this.todos);
     }
 
     addTodos(todoText) {
@@ -28,7 +50,7 @@ class Model {
         }
         
         this.todos.push(todo);
-        console.log(">>>>", this.listname)
+        console.log(">>>>this.listname", this.listname)
         this.onTodoListChanged(this.todos);
     }
 
@@ -39,6 +61,12 @@ class Model {
 
     toggleTodo(id) {
         this.todos = this.todos.map(todo => todo.id == id ? { id: todo.id, text: todo.text, complete: !todo.complete } : todo)
+        this.onTodoListChanged(this.todos);
+    }
+
+    showTasksList(name){
+        console.log("global tasks:",globalTasks[name], ', name:', name)
+        // this.todos = globalTasks[name];
         this.onTodoListChanged(this.todos);
     }
 
@@ -71,10 +99,10 @@ class View {
 
         this.todoList = document.querySelector('.list-items')
         this.form = document.querySelector('.form');
+        this.mainList = document.querySelector('.main-list')
         // this.form.append(this.input, this.submitButton);
 
         // this.app.append(this.title, this.p, this.form, this.todoList);
-        // console.log('>>> this.todoList', this.todoList, document.querySelector('#root'))
 
     }
 
@@ -136,10 +164,11 @@ class View {
                 this.todoList.append(li);
             })
         }
+        // you may need to comment this.
         globalTasks[this.listname] = [...todos];
     }
 
-    bindAddTodo (handler) {
+    bindAddTodo(handler) {
         // console.log('th  is inside bindAddTodo',this);
         this.form.addEventListener('submit', event => {
             event.preventDefault();
@@ -168,6 +197,15 @@ class View {
             }
         })
     }
+
+    bindshowTasks(handler){
+        this.mainList.addEventListener('click', event => {
+            if(event.target.className == 'main-list-li'){
+                const value = (event.target.textContent);
+                handler(value);
+            }
+        })
+    }
 }
 
 class Controller {
@@ -180,9 +218,11 @@ class Controller {
         let title = document.querySelector('.title');
         title.textContent = name;
 
-        let firstList = document.createElement('li');
-        firstList.textContent = name;
-        document.querySelector('.main-list').appendChild(firstList);
+        let list = document.createElement('li');
+        list.textContent = name;
+        list.id = `list${++counter}`;
+        list.classList = 'main-list-li';
+        document.querySelector('.main-list').appendChild(list);
 
         this.onTodoListChanged(this.model.todos);
 
@@ -191,6 +231,7 @@ class Controller {
         this.view.bindAddTodo(this.handleAddTodo);
         this.view.bindDeleteTodo(this.handleDeleteTodo);
         this.view.bindToggleTodo(this.handleToggleTodo);
+        this.view.bindshowTasks(this.handleShowTasksList);
         // this.view.bindCreateNewList(createNewList);
         this.model.bindTodoListChanged(this.onTodoListChanged);
     }
@@ -209,13 +250,17 @@ class Controller {
         this.model.toggleTodo(id);
     }
 
+    handleShowTasksList = (name) => {
+        this.model.showTasksList(name);
+    }
+
     onTodoListChanged = (todos) => {
         this.view.displayTodos(todos)
     }
 
 }
 
-const app = new Controller('List 1', new Model('list1'), new View('list1'));
+const app = new Controller('list1', new Model('list1'), new View('list1'));
 const addbutton = document.querySelector('.add-list');
 
 addbutton.addEventListener('click', () => createNewList());
@@ -224,5 +269,4 @@ function createNewList() {
 
     let listName = prompt('Enter List name:', '');
     let newList = new Controller(listName, new Model(listName), new View(listName));
-    console.log(newList.model.todos)
 }
